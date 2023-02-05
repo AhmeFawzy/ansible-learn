@@ -1,12 +1,52 @@
 ---
 - name: Configure nginx web server
   hosts: webserver
+  become: yes
   tasks:
-  - name: uninstall nginx server
+  - name: update package
+    apt:
+     update_cache: yes
+     
+  - name: install nginx server
     apt:
       name: nginx=1.18*
-      state: absent
-  - name: stop nginx server
+      state: present
+
+  - name: start nginx server
     service:
       name: nginx
-      state: stopped
+      state: started
+
+  - name: Install Docker
+    ansible.builtin.shell: cd ~ && curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
+
+  - name: Add the Jenkins repository to sources.list
+    apt_repository:
+      repo: 'deb https://pkg.jenkins.io/debian-stable binary/'
+      state: present
+      update_cache: yes
+
+  - name: Import the Jenkins GPG key
+    apt_key:
+      url: https://pkg.jenkins.io/debian-stable/jenkins.io.key
+      state: present
+
+  - name: Update package cache
+    apt:
+      update_cache: yes
+
+  - name: Install openjdk
+    apt:
+      name: openjdk-11-jdk
+      state: present
+
+  - name: Install jenkins
+    apt:
+      name: jenkins
+      state: present
+
+  - name: Start jenkins service
+    service:
+      name: jenkins
+      state: started
+      enabled: yes
