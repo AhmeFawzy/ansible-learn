@@ -6,7 +6,8 @@
   - name: update package
     apt:
      update_cache: yes
-     
+     cache_valid_time: 3600
+
   - name: install nginx server
     apt:
       name: nginx=1.18*

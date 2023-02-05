@@ -1,0 +1,42 @@
+---
+- name: Deploy node.js artifact on EC2 instance
+  hosts: nodejs
+  become: yes
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install node.js and npm
+      apt:
+        pkg:
+          - nodejs
+          - npm
+
+    - name: Copy node.js artifact to remote host
+      copy:
+        src: /mnt/c/Users/ahmed/IdeaProjects/simple-nodejs/nodejs-app-1.0.0.tgz 
+        dest: /home/ahmed
+    - name: Create the destination directory
+      file:
+        path: /home/ahmed/nodejs
+        state: directory
+    - name: Extract node.js artifact
+      unarchive:
+        src: /home/ahmed/nodejs-app-1.0.0.tgz 
+        dest: /home/ahmed/nodejs
+        remote_src: yes
+
+    - name: Install dependencies
+      npm:
+        path: /home/ahmed/nodejs/package
+
+    - name: Start the node.js application
+      command: node /home/ahmed/nodejs/app/server.js
+      async: 1000   #it will allow the app to run on the server even when the terminal is closed
+      poll: 0
+
+    - name: Ensure the node.js application is running
+      shell: ps aux | grep node    #same as command but command is more secure and shells allows to do do more
+      register: app_status         #creates a variable and assign the value from shell to it
+    - debug: msg={{app_status.stdout_lines}}
