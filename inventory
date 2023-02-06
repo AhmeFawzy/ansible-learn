@@ -1,8 +1,5 @@
 [nexus_server]
 13.38.219.42
 
-[nexus_server:vars]
-ansible_user=ubuntu
-ansible_private_key_file=/mnt/c/Users/ahmed/Downloads/ansible.pem
-ansible_python_interpreter=/usr/bin/python3
+
 
