@@ -1,5 +1,5 @@
 [nexus_server]
-13.39.51.125
+13.38.219.42
 
 [nexus_server:vars]
 ansible_user=ubuntu
