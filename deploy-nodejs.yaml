@@ -2,10 +2,13 @@
 - name: Deploy node.js artifact on EC2 instance
   hosts: nodejs
   become: yes
+  vars_files:
+    - project-vars
   tasks:
     - name: Update apt cache
       apt:
         update_cache: yes
+        cache_valid_time: 3600
 
     - name: Install node.js and npm
       apt:
@@ -13,26 +16,43 @@
           - nodejs
           - npm
 
+    - name: create new linux user
+      user:
+        name: "{{linux_name}}"
+        comment: New user admin for nodejs app
+        group: root
+      register: new_user
+    - debug: msg={{new_user}}
+
+- name: Deploy node.js artifact on EC2 instance
+  hosts: nodejs
+  become: True
+
+  vars_files:
+    - project-vars
+  tasks: 
     - name: Copy node.js artifact to remote host
       copy:
-        src: /mnt/c/Users/ahmed/IdeaProjects/simple-nodejs/nodejs-app-1.0.0.tgz 
-        dest: /home/ahmed
+        src:  "{{location}}/nodejs-app-{{version}}.tgz"
+        dest: "{{destination}}"
+
     - name: Create the destination directory
       file:
-        path: /home/ahmed/nodejs
+        path: "{{destination}}/nodejs"
         state: directory
+
     - name: Extract node.js artifact
       unarchive:
-        src: /home/ahmed/nodejs-app-1.0.0.tgz 
-        dest: /home/ahmed/nodejs
+        src: "{{destination}}/nodejs-app-{{version}}.tgz"
+        dest: "{{destination}}/nodejs"
         remote_src: yes
 
     - name: Install dependencies
       npm:
-        path: /home/ahmed/nodejs/package
+        path: "{{destination}}/nodejs/package"
 
     - name: Start the node.js application
-      command: node /home/ahmed/nodejs/app/server.js
+      command: node "{{destination}}/nodejs/app/server.js"
       async: 1000   #it will allow the app to run on the server even when the terminal is closed
       poll: 0
 
