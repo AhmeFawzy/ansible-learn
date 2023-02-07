@@ -3,5 +3,5 @@ location: /mnt/c/Users/ahmed/IdeaProjects/simple-nodejs
 linux_name: mostafa
 destination: /home/{{linux_name}}
 
-docker_username: flokibaots
+docker_username: flokiboats
 docker_password: 0120855275

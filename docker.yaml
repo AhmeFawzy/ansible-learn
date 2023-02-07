@@ -3,8 +3,6 @@
   hosts: docker_server
   become: yes
   gather_facts: False
-  vars_files:
-    - project-vars
   tasks:
     - name: Install python3 and docker
       vars:
@@ -49,6 +47,8 @@
 
 - name: start docker conatiners
   hosts: docker_server
+  vars_files:
+    - project-vars
   tasks:
     - name: copy docker compose file
       copy: 
@@ -58,5 +58,9 @@
       docker_login:
         username: "{{ docker_username }}"
         password: "{{ docker_password }}"
+    - name: start container from docker compose
+      docker_compose: 
+        project_src: /home/ec2-user
+        state: present
 
       

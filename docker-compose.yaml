@@ -1,7 +1,7 @@
 version: '3'
 services:
   java-app:
-    image: flokiboats/my-repo:tagname
+    image: flokiboats/my-repo:java-maven-2.0
     environment:
       - DB_USER=user
       - DB_PWD=pass
