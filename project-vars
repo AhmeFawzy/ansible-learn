@@ -1,7 +1,0 @@
-version: 1.0.0 
-location: /mnt/c/Users/ahmed/IdeaProjects/simple-nodejs
-linux_name: mostafa
-destination: /home/{{linux_name}}
-
-docker_username: flokiboats
-docker_password: 0120855275
