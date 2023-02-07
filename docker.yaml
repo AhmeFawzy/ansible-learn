@@ -1,0 +1,62 @@
+---
+- name: Install python3, docker, docker-compose
+  hosts: docker_server
+  become: yes
+  gather_facts: False
+  vars_files:
+    - project-vars
+  tasks:
+    - name: Install python3 and docker
+      vars:
+        ansible_python_interpreter: /usr/bin/python     #we did set python3 globally but this task should be done with python2 so we overridded it here
+      ansible.builtin.yum: 
+        name: 
+          - python3
+          - docker
+        update_cache: yes
+        state: present          # absent if we want to uninstall it
+        
+    - name: Install Docker-compose
+      ansible.builtin.get_url: 
+        url: https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-{{lookup('pipe', 'uname -m')}}
+        dest: /usr/local/bin/docker-compose
+        mode: +x
+
+    - name: Start docker daemon
+      ansible.builtin.systemd:
+        name: docker
+        state: started            #it will start the deamon but docker should be excuted just with sudo( so we need to add ec2-user to docker group)
+
+    - name: Install docker python module
+      ansible.builtin.pip:
+        name: 
+          - docker
+          - docker-compose
+    
+
+- name: Add ec2-user to docker group
+  hosts: docker_server
+  become: yes
+  tasks: 
+    - name: Add ec2-user to docker group
+      ansible.builtin.user: 
+        name: ec2-user
+        groups: docker
+        append: yes             # when you type command( groups) it won't appear till you restart the session ( you need to log out and log in again)
+
+    - name: Reconnect to server session                   #we reconnent the session to be able to show docker in the groups
+      ansible.builtin.meta: reset_connection
+
+- name: start docker conatiners
+  hosts: docker_server
+  tasks:
+    - name: copy docker compose file
+      copy: 
+        src: /mnt/c/Users/ahmed/IdeaProjects/learn-ansible/docker-compose.yaml
+        dest: /home/ec2-user/docker-compose.yaml
+    - name: Docker login
+      docker_login:
+        username: "{{ docker_username }}"
+        password: "{{ docker_password }}"
+
+      
