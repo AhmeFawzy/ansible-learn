@@ -11,5 +11,5 @@
         search_regex: OpenSSH
         host: '{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}'
       vars:
-        ansible_connection: local
+        ansible_connection: local       # means it will be excuted locally 
         ansible_python_interpreter: /usr/bin/python

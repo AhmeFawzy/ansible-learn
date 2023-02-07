@@ -1,19 +1,4 @@
 ---
-- name: Wait for ssh connections
-  hosts: all
-  gather_facts: False
-  tasks:
-    - name: Ensure ssh port open
-      wait_for: 
-        port: 22
-        delay: 10
-        timout: 120
-        search_regex: OpenSSH
-        host: '{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}'
-      vars:
-        ansible_connection: local  #means we will connect locally
-        ansible_python_interpreter: /usr/bin/python
-
 - name: Install python3, docker, docker-compose
   hosts: all
   become: yes
@@ -28,6 +13,7 @@
           - docker
         update_cache: yes
         state: present
+
     - name: Install Docker-compose
       ansible.builtin.get_url: 
         # If the url isn't found, use 'url: https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64'
@@ -35,10 +21,12 @@
         url: https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-{{lookup('pipe', 'uname -m')}}
         dest: /usr/local/bin/docker-compose
         mode: +x
+
     - name: Start docker daemon
       ansible.builtin.systemd:
         name: docker
         state: started
+
     - name: Install docker python module
       ansible.builtin.pip:
         name: 
@@ -67,11 +55,13 @@
       ansible.builtin.copy:
         src: /mnt/c/Users/ahmed/IdeaProjects/learn-ansible/docker-compose.yaml
         dest: /home/ahmed/docker-compose.yaml
+
     - name: Docker login
       community.docker.docker_login: 
         registry_url: https://index.docker.io/v1/
         username: "{{docker_username}}"
         password: "{{docker_password}}"
+
     - name: Start container from compose
       community.docker.docker_compose: 
         project_src: /home/ahmed
