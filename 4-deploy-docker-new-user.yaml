@@ -37,26 +37,26 @@
   tasks: 
     - name: Create new linux user
       ansible.builtin.user:
-        name: nana
-        groups: adm,docker
+        name: ahmed
+        groups: adm,docker   # in this case we don't need to reconnect the session as we are adding a new user not editing an existing user
 
 
 - name: Start docker containers
   hosts: all
   become: yes
-  become_user: nana
+  become_user: ahmed
   vars_files:
     - project-vars
   tasks:
     - name: Copy docker compose
       ansible.builtin.copy:
-        src: /Users/nanajanashia/Demo-projects/Bootcamp/Exercises/bootcamp-java-mysql-project/docker-compose-full.yaml
-        dest: /home/nana/docker-compose.yaml
+        src: /mnt/c/Users/ahmed/IdeaProjects/learn-ansible/docker-compose.yaml
+        dest: /home/ahmed/docker-compose.yaml
     - name: Docker login
       community.docker.docker_login: 
         registry_url: https://index.docker.io/v1/
-        username: nanajanashia
+        username: "{{docker_username}}"
         password: "{{docker_password}}"
     - name: Start container from compose
       community.docker.docker_compose: 
-        project_src: /home/nana
+        project_src: /home/ahmed
