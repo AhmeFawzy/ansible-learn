@@ -5,7 +5,7 @@ regions:
 
 keyed_groups:
   - key: tags
-    prefix: ggroup
+    prefix: group
   - key: instance_type
     prefix: instance_type    #this will be shown at the start of the line to name the gorup of instances
     

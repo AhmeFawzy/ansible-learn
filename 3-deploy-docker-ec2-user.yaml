@@ -25,14 +25,14 @@
         name: docker
         state: started            #it will start the deamon but docker should be excuted just with sudo( so we need to add ec2-user to docker group)
 
-    - name: Install docker python module
+    - name: Install docker python module    #we won't do this if use digital ocean for example cause python3 is preinstalled
       ansible.builtin.pip:
         name: 
           - docker
           - docker-compose
     
 
-- name: Add ec2-user to docker group
+- name: Add ec2-user to docker group  #ec2-user is already exists if you want to create a new user you would use user module
   hosts: docker_server
   become: yes
   tasks: 
